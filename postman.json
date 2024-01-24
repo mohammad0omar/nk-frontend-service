@@ -1,0 +1,413 @@
+{
+  "info": {
+    "_postman_id": "your-collection-id",
+    "name": "Person API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+        "name": "Create Person",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n\t\"firstName\": \"{{firstName}}\",\n\t\"lastName\": \"{{lastName}}\",\n\t\"age\": {{age}},\n\t\"isAdmin\": {{isAdmin}},\n\t\"email\": \"{{email}}\",\n\t\"password\": \"{{password}}\",\n\t\"dob\": \"{{dob}}\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}:{{port}}/backend/person",
+            "protocol": "http",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "port": "{{port}}",
+            "path": [
+              "backend",
+              "person"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('Response body has required fields', function() {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('firstName');",
+                "    pm.expect(jsonData).to.have.property('lastName');",
+                "    // Add more fields as required",
+                "});",
+                "pm.test('Error Handling', function() {",
+                "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404]);",
+                "    // Add additional error checks as needed",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Create Admin",
+        "request": {
+            "method": "POST",
+            "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "body": {
+                "mode": "raw",
+                "raw": "{\n\t\"firstName\": \"{{adminFirstName}}\",\n\t\"lastName\": \"{{adminLastName}}\",\n\t\"age\": {{adminAge}},\n\t\"isAdmin\": true,\n\t\"email\": \"{{adminEmail}}\",\n\t\"password\": \"{{adminPassword}}\",\n\t\"dob\": \"{{adminDob}}\"\n}"
+            },
+            "url": {
+                "raw": "{{baseUrl}}:{{port}}/backend/person",
+                "protocol": "http",
+                "host": [
+                    "{{baseUrl}}"
+                ],
+                "port": "{{port}}",
+                "path": [
+                    "backend",
+                    "person"
+                ]
+            }
+        },
+        "response": [],
+        "event": [
+            {
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "pm.test('Status code is 200 for successful creation', function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "pm.test('Response body has required fields for admin', function() {",
+                        "    var jsonData = pm.response.json();",
+                        "    pm.expect(jsonData).to.have.property('firstName');",
+                        "    pm.expect(jsonData).to.have.property('lastName');",
+                        "    pm.expect(jsonData).to.have.property('isAdmin').and.to.be.true;",
+                        "});",
+                        "pm.test('Error Handling for missing fields', function() {",
+                        "    if(pm.response.code !== 200) {",
+                        "        pm.expect(jsonData.message).to.include('missing required field');",
+                        "    }",
+                        "});"
+                    ],
+                    "type": "text/javascript"
+                }
+            }
+        ]
+    },    
+      {
+        "name": "Login",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Cookie",
+              "value": "{{sails_cookie}}"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}:{{port}}/backend/login",
+            "protocol": "http",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "port": "{{port}}",
+            "path": [
+              "backend",
+              "login"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200 for successful login', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('Response body has accessToken', function() {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('accessToken');",
+                "});",
+                "pm.test('Error Handling for invalid credentials', function() {",
+                "    if(pm.response.code !== 200) {",
+                "        pm.expect(jsonData.message).to.eql('Invalid credentials');",
+                "    }",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+    },      
+    {
+        "name": "Refresh Token",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Cookie",
+              "value": "{{sails_cookie}}"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"accessToken\": \"{{access_token}}\",\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}:{{port}}/backend/token/refresh",
+            "protocol": "http",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "port": "{{port}}",
+            "path": [
+              "backend",
+              "token",
+              "refresh"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200 for successful token refresh', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('Response body has new accessToken', function() {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('accessToken');",
+                "    pm.expect(jsonData.accessToken).to.not.eql('{{access_token}}');",
+                "});",
+                "pm.test('Error Handling for invalid tokens', function() {",
+                "    if(pm.response.code !== 200) {",
+                "        pm.expect(jsonData.message).to.include('Invalid token');",
+                "    }",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },      
+      {
+        "name": "Get Persons",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Cookie",
+              "value": "{{sails_cookie}}"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}:{{port}}/backend/persons",
+            "protocol": "http",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "port": "{{port}}",
+            "path": [
+              "backend",
+              "persons"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200 for successful retrieval', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('Response body is an array', function() {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.be.an('array');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Get Person Details",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "authorization",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "Cookie",
+              "value": "{{sails_cookie}}"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}:{{port}}/backend/person",
+            "protocol": "http",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "port": "{{port}}",
+            "path": [
+              "backend",
+              "person"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200 for successful retrieval', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('Response body has person details', function() {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('firstName');",
+                "    pm.expect(jsonData).to.have.property('lastName');",
+                "    // Add more fields as required",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+    },
+    {
+        "name": "Delete Person",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "authorization",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "Cookie",
+              "value": "{{sails_cookie}}"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}:{{port}}/backend/person/{{personId}}",
+            "protocol": "http",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "port": "{{port}}",
+            "path": [
+              "backend",
+              "person",
+              "{{personId}}"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200 for successful deletion', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('Confirm deletion response', function() {",
+                "    var jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message).to.eql('Person deleted successfully');",
+                "    // Replace with actual success message from your API",
+                "});",
+                "pm.test('Error Handling for invalid person ID', function() {",
+                "    if(pm.response.code !== 200) {",
+                "        pm.expect(jsonData.message).to.include('Invalid person ID');",
+                "    }",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+      
+  ],
+  "variable": [
+    {
+      "id": "sails_cookie",
+      "value": "sails.sid=s%3ATJZHmggewCrVt5KwM3g-MSP5RpNesqN8.DVNdU6xcRXEXlbFXAsXCmhC1zRN3a%2F4iy5WJ3txVt7o",
+      "type": "string"
+    },
+    {
+      "id": "access_token",
+      "value": "<Your Access Token>",
+      "type": "string"
+    },
+    {
+      "id": "refresh_token",
+      "value": "<Your Refresh Token>",
+      "type": "string"
+    },
+    {
+      "id": "baseUrl",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "id": "port",
+      "value": "1337",
+      "type": "string"
+    },
+    {
+      "id": "personId",
+      "value": "<Person ID>",
+      "type": "string"
+    },
+    {
+      "id": "adminFirstName",
+      "value": "<Admin First Name>",
+      "type": "string"
+    },
+    {
+      "id": "adminLastName",
+      "value": "<Admin Last Name>",
+      "type": "string"
+    }
+  ]
+  
+}

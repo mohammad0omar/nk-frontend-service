@@ -1,0 +1,15 @@
+.persons-list {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.persons-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.persons-list li {
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
